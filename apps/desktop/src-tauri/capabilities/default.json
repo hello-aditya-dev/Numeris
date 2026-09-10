@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capabilities of the main Numeris window. Least-privilege: the UI invokes only Numeris-defined commands; no direct filesystem, shell, or http access is exposed to the webview.",
+  "windows": ["main"],
+  "permissions": ["core:default", "core:window:default", "core:event:default", "core:app:default"]
+}

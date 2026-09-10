@@ -1,0 +1,35 @@
+[package]
+name = "numeris-desktop"
+description = "Numeris desktop application shell (Tauri 2)"
+version = "1.0.0-dev"
+edition = "2021"
+rust-version = "1.77"
+authors = ["hello-aditya-dev <hi.aditya.dev@gmail.com>"]
+license-file = "../../../LICENSE"
+default-run = "numeris-desktop"
+
+# This crate is intentionally a standalone workspace so the statistical
+# engine crates build and test without the desktop shell's system
+# dependencies (see BUILD_NOTES.md).
+[workspace]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+numeris-core = { path = "../../../crates/numeris-core" }
+numeris-stats = { path = "../../../crates/numeris-stats" }
+numeris-command = { path = "../../../crates/numeris-command" }
+numeris-project = { path = "../../../crates/numeris-project" }
+
+[lints.clippy]
+needless_range_loop = "allow"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

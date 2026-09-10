@@ -10,9 +10,11 @@
 #   frontend  — TypeScript typecheck and production build of the React app
 #               (ubuntu-latest only; the frontend is platform-independent).
 #
-# The Rust workspace manifest lives at the repository root, so plain
-# `cargo <cmd>` invocations resolve the whole workspace
-# (crates/numeris-* + apps/desktop/src-tauri). No --manifest-path is needed.
+# The Rust workspace manifest lives at the repository root and contains the
+# four engine crates (numeris-core, numeris-stats, numeris-command,
+# numeris-project). The Tauri shell (apps/desktop/src-tauri) is a standalone
+# crate with its own lockfile so engine CI needs no desktop system
+# dependencies; the desktop bundle is exercised by the release workflow.
 #
 # NOTE: the frontend job requires `apps/desktop/package.json` (plus
 # tsconfig.json / vite.config.ts), which the desktop-app engineer provides.
