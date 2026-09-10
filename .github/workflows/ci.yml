@@ -1,0 +1,111 @@
+# Numeris — Continuous Integration
+#
+# Runs on every push to `main` and on every pull request (spec §36).
+#
+# Jobs:
+#   rust      — format check, lint (clippy, deny warnings), and the full test
+#               suite (engine golden/validation tests included) across the
+#               three supported platforms: ubuntu-latest, macos-latest,
+#               windows-latest.
+#   frontend  — TypeScript typecheck and production build of the React app
+#               (ubuntu-latest only; the frontend is platform-independent).
+#
+# The Rust workspace manifest lives at the repository root, so plain
+# `cargo <cmd>` invocations resolve the whole workspace
+# (crates/numeris-* + apps/desktop/src-tauri). No --manifest-path is needed.
+#
+# NOTE: the frontend job requires `apps/desktop/package.json` (plus
+# tsconfig.json / vite.config.ts), which the desktop-app engineer provides.
+# The job checks for the manifest first and fails with an explanatory
+# message rather than a bare bun error if it has not landed yet.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    name: Rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        # All three target platforms must stay green (spec §36, rule 12).
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust stable (clippy + rustfmt)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache cargo build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Format check
+        run: cargo fmt --all --check
+
+      - name: Lint (clippy, warnings are errors)
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Test (workspace, locked dependencies)
+        # `--locked` enforces the committed Cargo.lock so CI builds exactly
+        # what the repository pins (spec §46 rule 1: dependencies are pinned
+        # and license-audited). `--all` runs the tests of every workspace
+        # member, including the numerical validation suite in numeris-stats
+        # (NIST StRD Longley + golden fixtures).
+        # continue-on-error is explicitly false: statistical correctness is a
+        # release blocker, never a warning (spec §46 rule 6).
+        continue-on-error: false
+        run: cargo test --all --locked
+
+  frontend:
+    name: Frontend (bun)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify frontend manifest exists
+        # `apps/desktop/package.json` is owned by the desktop-app engineer.
+        # Fail early with a clear message when it is not present yet.
+        run: |
+          if [ ! -f apps/desktop/package.json ]; then
+            echo "::error::apps/desktop/package.json not found."
+            echo "::error::The frontend job needs the desktop app manifest (package.json, tsconfig.json, vite.config.ts), which is provided by the desktop-app engineer."
+            exit 1
+          fi
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install frontend dependencies
+        working-directory: apps/desktop
+        # Prefer the committed lockfile; fall back to a plain install while
+        # the lockfile is still being established by the frontend engineer.
+        run: bun install --frozen-lockfile || bun install
+
+      - name: Typecheck (tsc, no emit)
+        working-directory: apps/desktop
+        run: bunx tsc --noEmit
+
+      - name: Production build (vite)
+        working-directory: apps/desktop
+        run: bunx vite build

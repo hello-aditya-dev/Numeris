@@ -1,0 +1,15 @@
+[package]
+name = "numeris-core"
+description = "Numeris core: DataFrame, CSV import, descriptive statistics, probability distributions, error model"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

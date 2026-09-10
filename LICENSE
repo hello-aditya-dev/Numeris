@@ -1,0 +1,66 @@
+Numeris Software License — Source-Available Desktop Software
+=============================================================
+
+Copyright (c) 2025 hello-aditya-dev (hi.aditya.dev@gmail.com). All rights reserved.
+
+1. SUMMARY
+
+   Numeris is proprietary desktop statistical software distributed with its source
+   code available for inspection. You may use, study, modify and build the software
+   for your own personal, academic, and internal research purposes in accordance
+   with the commercial terms below. Redistribution of the software or derivative
+   works as a competing statistical product is not permitted without a separate
+   written agreement from the author.
+
+2. COMMERCIAL MODEL (V1)
+
+   2.1 First 1,000 verified users receive the complete V1 desktop product free.
+       Verification is tied to a unique verified email entitlement.
+
+   2.2 After the first 1,000 verified users:
+         - a useful Free edition remains available, and
+         - the Full edition of the 1.x series is licensed for a one-time
+           payment of USD 29 (one active device per verified email/license,
+           with legitimate device deactivation/transfer).
+
+   2.3 There is no subscription, no usage meter, no advertising, and no cloud
+       requirement for statistical computation.
+
+3. PERMITTED USE
+
+   You may:
+   - download, compile, run and use Numeris for personal, academic, teaching
+     and internal commercial research;
+   - inspect, audit, modify and extend the source code for your own use;
+   - publish academic work, papers and reports produced with Numeris;
+   - share screenshots and brief quotations of the source for teaching,
+     review or research, with attribution.
+
+4. RESTRICTIONS
+
+   You may not:
+   - redistribute Numeris, or derivative works of it, as a statistical software
+     product (in whole or in substantial part) without written permission;
+   - remove, obscure or alter copyright, license or attribution notices;
+   - use the Numeris name, marks or identity to promote a derivative product;
+   - use Numeris to violate applicable law or academic-integrity standards.
+
+5. THIRD-PARTY COMPONENTS
+
+   Numeris depends on third-party components distributed under their own
+   licenses (see THIRD-PARTY-NOTICES.txt and LICENSES/). Those licenses govern
+   the respective components; nothing in this license limits your rights under
+   them.
+
+6. NO WARRANTY
+
+   NUMERIS IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+   Numeris performs deterministic numerical computation. While it is built with
+   a numerical validation suite (see validation/ and docs/), the user remains
+   responsible for verifying results appropriate to their research context.

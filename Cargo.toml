@@ -1,0 +1,37 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/numeris-core",
+    "crates/numeris-stats",
+    "crates/numeris-command",
+    "crates/numeris-project",
+]
+# NOTE: apps/desktop/src-tauri is intentionally a standalone crate with its
+# own lockfile so the statistical engine workspace builds and tests without
+# the desktop shell's system dependencies. See BUILD_NOTES.md.
+
+[workspace.package]
+version = "1.0.0-dev"
+edition = "2021"
+rust-version = "1.77"
+authors = ["hello-aditya-dev <hi.aditya.dev@gmail.com>"]
+license-file = "LICENSE"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+numeris-core = { path = "crates/numeris-core" }
+numeris-stats = { path = "crates/numeris-stats" }
+numeris-command = { path = "crates/numeris-command" }
+numeris-project = { path = "crates/numeris-project" }
+
+[workspace.lints.clippy]
+# Numerical kernels iterate over several parallel arrays (values, weights,
+# residuals, leverage) by index; rewriting them as iterator chains would
+# obscure the mathematics. This lint is allowed deliberately.
+needless_range_loop = "allow"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

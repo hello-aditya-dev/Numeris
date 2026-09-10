@@ -1,0 +1,189 @@
+# Numeris — Release Pipeline
+#
+# Builds platform installers and attaches them to a DRAFT GitHub Release.
+# Triggered by pushing a tag matching `v*` (for example `v1.0.0`).
+# Pull requests never run this workflow, so PRs from forks never need any
+# signing secrets.
+#
+# Artifacts produced per platform (spec §25):
+#   Windows   — MSI + NSIS installers       (x86_64-pc-windows-msvc)
+#   macOS     — DMG for Apple silicon      (aarch64-apple-darwin)
+#               DMG for Intel               (x86_64-apple-darwin)
+#   Linux     — AppImage + .deb            (native target)
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# SIGNING / NOTARIZATION — REQUIRED BEFORE ANY PUBLIC (NON-DRAFT) RELEASE
+# ─────────────────────────────────────────────────────────────────────────────
+# The workflow references the signing secrets below, but it does NOT fail when
+# they are absent: unset GitHub secrets expand to empty strings, which the
+# Tauri bundler treats as "do not sign". Draft builds therefore work from a
+# clean fork with zero secrets configured. Before a real public release the
+# following must be in place (see also docs/INSTALL.md, KNOWN_LIMITATIONS.md
+# and the release checklist in the engineering specification §48):
+#
+# 1) macOS — Developer ID signing + notarization (Gatekeeper-friendly direct
+#    distribution per Apple's requirements for distributed Mac software):
+#      APPLE_CERTIFICATE            base64-encoded .p12 Developer ID Application certificate
+#      APPLE_CERTIFICATE_PASSWORD   password for the .p12 import
+#      APPLE_SIGNING_IDENTITY       e.g. "Developer ID Application: Acme (TEAMID)"
+#      APPLE_ID                     the Apple ID used for notarization
+#      APPLE_PASSWORD               app-specific password for that Apple ID
+#      APPLE_TEAM_ID                the 10-character team id
+#    Notarization happens automatically inside `tauri build` when the
+#    APPLE_* variables are present (hardened runtime is enabled by Tauri).
+#
+# 2) Windows — code signing of MSI/NSIS artifacts (e.g. OV certificate via
+#    the bundler's signing configuration, or Azure Trusted Signing). Note
+#    that EV certificates no longer bypass SmartScreen reputation building
+#    by default — reputation accrues to signed, distributed binaries over
+#    time either way (spec §25).
+#
+# 3) All platforms — Tauri updater signatures (Ed25519 minisign keypair).
+#    The updater requires signed update artifacts (spec §26):
+#      TAURI_SIGNING_PRIVATE_KEY          the private key (base64 or path)
+#      TAURI_SIGNING_PRIVATE_KEY_PASSWORD  password protecting the key
+#    The PRIVATE key is generated once with `bunx tauri signer generate`,
+#    stored ONLY as a GitHub secret, and backed up safely. It is never
+#    committed to the repository. Losing it prevents publishing verifiable
+#    updates to already-installed clients. The matching PUBLIC key is baked
+#    into tauri.conf.json. Updater artifact creation is additionally gated
+#    by the `bundle > createUpdaterArtifacts` setting in tauri.conf.json,
+#    which the desktop-app engineer controls.
+#
+# 4) Linux — AppImage integrity benefits from the same Tauri signer key
+#    (signature files are uploaded next to the artifact); GPG signing of
+#    .deb/apt repositories is a distribution-site concern, not a CI one.
+#
+# When the secrets are absent the jobs still succeed and produce unsigned
+# draft artifacts for testing. Publishing a draft (clicking "Publish" in the
+# GitHub UI) without signing is NOT permitted for public releases.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # required to create the GitHub release and upload assets
+
+jobs:
+  build:
+    name: Build (${{ matrix.platform }} ${{ matrix.args }})
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 120
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS Apple silicon (primary modern target)
+          - platform: macos-latest
+            args: '--target aarch64-apple-darwin'
+            rust-targets: 'aarch64-apple-darwin'
+          # macOS Intel
+          - platform: macos-latest
+            args: '--target x86_64-apple-darwin'
+            rust-targets: 'x86_64-apple-darwin'
+          # Linux — native target, AppImage + deb
+          - platform: ubuntu-latest
+            args: ''
+            rust-targets: ''
+          # Windows x64 — MSI + NSIS
+          - platform: windows-latest
+            args: '--target x86_64-pc-windows-msvc'
+            rust-targets: 'x86_64-pc-windows-msvc'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Add the cross-compilation targets used by the macOS matrix legs.
+          # Empty for native builds (Linux), harmless when identical to host.
+          targets: ${{ matrix.rust-targets }}
+
+      - name: Cache cargo build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install bun (frontend toolchain)
+        uses: oven-sh/setup-bun@v2
+        # `tauri build` runs the beforeBuildCommand configured in
+        # apps/desktop/src-tauri/tauri.conf.json (bun run build), so bun must
+        # be on PATH before the bundler starts.
+
+      - name: Install Linux system dependencies (Tauri 2 / webkit2gtk)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libwebkit2gtk-4.1-dev
+
+      - name: Preflight — report signing configuration (never fails)
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+        run: |
+          present() { if [ -n "${1:-}" ]; then echo "configured"; else echo "ABSENT (build will be unsigned)"; fi; }
+          echo "TAURI_SIGNING_PRIVATE_KEY:          $(present "$TAURI_SIGNING_PRIVATE_KEY")"
+          echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD: $(present "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD")"
+          echo "APPLE_CERTIFICATE:                  $(present "$APPLE_CERTIFICATE")"
+          echo "APPLE_SIGNING_IDENTITY:             $(present "$APPLE_SIGNING_IDENTITY")"
+          echo "APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID: $(present "$APPLE_ID")"
+          echo "Draft artifacts are produced regardless; public releases REQUIRE signing."
+
+      - name: Build and upload release artifacts (draft release)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # ── Tauri updater + AppImage signing (Ed25519 minisign) ──
+          # Absent ⇒ updater signature files are simply not generated.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+          # ── macOS Developer ID signing + notarization ──
+          # Absent ⇒ the .app/.dmg is left unsigned (draft builds only).
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+        with:
+          # The Tauri project lives in apps/desktop (src-tauri inside it).
+          projectPath: apps/desktop
+
+          # All matrix legs target the same tag; the first leg to finish
+          # creates the draft release, the others attach to it.
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Numeris ${{ github.ref_name }}'
+          releaseBody: |
+            Draft build of Numeris ${{ github.ref_name }}.
+
+            - Windows: MSI / NSIS installer (x64)
+            - macOS: DMG for Apple silicon and Intel
+            - Linux: AppImage and .deb
+
+            See CHANGELOG.md for changes and KNOWN_LIMITATIONS.md for scope.
+            Draft artifacts may be unsigned; do not distribute publicly
+            without signing and notarization.
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

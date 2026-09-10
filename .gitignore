@@ -1,0 +1,46 @@
+# Build outputs
+target/
+dist/
+build/
+out/
+*.app
+*.dmg
+*.exe
+*.msi
+*.AppImage
+*.deb
+
+# Dependencies
+node_modules/
+
+# Rust
+**/*.rs.bk
+
+# Logs
+*.log
+logs/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# Local env / secrets — NEVER commit tokens or keys
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Numeris local state
+.numeris-local/
+*.numeris-local
+
+# Coverage
+coverage/

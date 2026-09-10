@@ -1,0 +1,146 @@
+Numeris — Third-Party Notices
+=============================
+
+This file is the license audit trail required by the Numeris engineering
+specification (§5.1): every production dependency is recorded here, checked at
+the exact version used, with its license and notice obligations. Full license
+texts for the licenses referenced below are kept in the LICENSES/ directory.
+
+Numeris itself (the crates numeris-core, numeris-stats, numeris-command and
+numeris-project, plus the desktop application) is distributed under the
+Numeris Software License — see the LICENSE file at the repository root.
+
+--------------------------------------------------------------------------------
+1. Rust dependencies (engine crates and desktop shell)
+--------------------------------------------------------------------------------
+
+tauri 2
+  License:      MIT OR Apache-2.0
+  Copyright:   (c) 2019-2024 Tauri Programme within The Commons Conservancy
+  Homepage:     https://tauri.app
+  Usage:        Cross-platform desktop shell for the Numeris application
+                (windows, IPC, packaging, updater integration). Consumed by
+                apps/desktop/src-tauri.
+
+tauri-build 2
+  License:      MIT OR Apache-2.0
+  Copyright:   (c) 2019-2024 Tauri Programme within The Commons Conservancy
+  Homepage:     https://tauri.app
+  Usage:        Build-time helper that generates the Tauri context and
+                capability plumbing for the desktop shell (build.rs).
+
+serde 1
+  License:      MIT OR Apache-2.0
+  Copyright:   (c) 2014 Erick Tryzelaar, David Tolnay, and serde contributors
+  Homepage:     https://serde.rs
+  Usage:        Serialization/deserialization framework for the canonical
+                object model (ModelSpecification, ModelResult, project files,
+                command ASTs, .numeris JSON documents). The only third-party
+                dependency of the statistical engine crates.
+
+serde_json 1
+  License:      MIT OR Apache-2.0
+  Copyright:   (c) 2014 Erick Tryzelaar, David Tolnay, and serde-json
+                contributors
+  Homepage:     https://github.com/serde-rs/json
+  Usage:        JSON reading/writing for project files, result objects and
+                JSON data import/export. The only other third-party dependency
+                of the statistical engine crates.
+
+Note: the Numeris statistical core (numeris-core, numeris-stats) is an
+independent, pure-Rust implementation. Linear algebra (QR decomposition),
+statistical distributions (Normal/t/F/chi-square) and CSV parsing (RFC 4180)
+are implemented in-repo and contain NO third-party statistical or numerical
+code (no statrs, no faer, no nalgebra, no Polars, no DuckDB).
+
+--------------------------------------------------------------------------------
+2. npm dependencies (apps/desktop frontend)
+--------------------------------------------------------------------------------
+
+react 19
+  License:      MIT
+  Copyright:   (c) Meta Platforms, Inc. and affiliates.
+  Homepage:     https://react.dev
+  Usage:        User-interface rendering.
+
+react-dom 19
+  License:      MIT
+  Copyright:   (c) Meta Platforms, Inc. and affiliates.
+  Homepage:     https://react.dev
+  Usage:        React renderer for the WebView DOM target.
+
+zustand 5
+  License:      MIT
+  Copyright:   (c) 2019 Paul Henschel and zustand contributors
+  Homepage:     https://github.com/pmndrs/zustand
+  Usage:        Lightweight application state management.
+
+@tanstack/react-table 8
+  License:      MIT
+  Copyright:   (c) 2021 Tanner Linsley and TanStack contributors
+  Homepage:     https://tanstack.com/table
+  Usage:        Headless table engine for the virtualized data grid and
+                statistical result tables.
+
+@tauri-apps/api 2
+  License:      MIT OR Apache-2.0
+  Copyright:   (c) 2019-2024 Tauri Programme within The Commons Conservancy
+  Homepage:     https://tauri.app
+  Usage:        Typed IPC bridge between the React frontend and the Rust
+                application services (invoke, events, window APIs).
+
+@tauri-apps/cli 2 (development dependency)
+  License:      MIT OR Apache-2.0
+  Copyright:   (c) 2019-2024 Tauri Programme within The Commons Conservancy
+  Homepage:     https://tauri.app
+  Usage:        Tauri CLI used for `tauri dev`, `tauri build` and
+                `tauri signer generate` during development.
+
+vite 6 (development dependency)
+  License:      MIT
+  Copyright:   (c) 2019-present VoidZero Inc. and Vite contributors
+  Homepage:     https://vite.dev
+  Usage:        Frontend bundler/dev server.
+
+@vitejs/plugin-react (development dependency)
+  License:      MIT
+  Copyright:   (c) 2019-present VoidZero Inc. and Vite contributors
+  Homepage:     https://github.com/vitejs/vite-plugin-react
+  Usage:        Vite plugin providing React fast refresh and JSX transforms.
+
+typescript 5 (development dependency)
+  License:      Apache-2.0
+  Copyright:   (c) Microsoft Corporation.
+  Homepage:     https://www.typescriptlang.org
+  Usage:        Static type system for the frontend (`tsc --noEmit`).
+
+--------------------------------------------------------------------------------
+3. Development tooling (not distributed in installers)
+--------------------------------------------------------------------------------
+
+bun 1
+  License:      MIT
+  Copyright:   (c) 2021 Jarred Sumner and Bun contributors
+  Homepage:     https://bun.sh
+  Usage:        JavaScript runtime, package manager and script runner used to
+                install frontend dependencies and run the Vite build. Bun is a
+                build-time tool only and is not bundled into any Numeris
+                artifact.
+
+--------------------------------------------------------------------------------
+4. License inventory summary
+--------------------------------------------------------------------------------
+
+All third-party components listed above are distributed under the MIT license,
+the Apache License 2.0, or the dual "MIT OR Apache-2.0" option — all of them
+permissive, commercially compatible licenses. No copyleft (GPL/AGPL/LGPL/SSPL)
+dependency is used anywhere in the Numeris build graph.
+
+Per the obligations of those licenses:
+  - MIT text:         LICENSES/MIT.txt
+  - Apache-2.0 text:  LICENSES/Apache-2.0.txt
+
+Machine-readable inventory: DEPENDENCY-MANIFEST.json.
+
+If a dependency's licensing is unclear at the exact version in use, it must
+NOT be bundled until reviewed (engineering specification §5.1).

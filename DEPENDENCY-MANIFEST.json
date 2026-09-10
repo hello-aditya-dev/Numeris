@@ -1,0 +1,152 @@
+{
+  "generated": "2025-01-01",
+  "product": "numeris",
+  "version": "1.0.0-dev",
+  "notes": "Machine-readable license/dependency inventory for Numeris (spec \u00a75.1). Every component shipped in a Numeris build is listed here with its license. All third-party entries are permissively licensed (MIT, Apache-2.0, or MIT OR Apache-2.0); no copyleft dependency exists in the build graph. Human-readable attribution: THIRD-PARTY-NOTICES.txt. License texts: LICENSES/.",
+  "components": [
+    {
+      "name": "numeris-core",
+      "kind": "rust-crate",
+      "version": "1.0.0-dev",
+      "license": "Proprietary - Numeris Software License 1.0",
+      "source": "this repository (crates/numeris-core)",
+      "usage": "Numeris-owned component. DataFrame, RFC 4180 CSV reader, descriptive statistics, statistical distributions (Normal/t/F/chi-square CDFs and quantiles), and the error model. Independent in-repo implementation; contains no third-party statistical or numerical code."
+    },
+    {
+      "name": "numeris-stats",
+      "kind": "rust-crate",
+      "version": "1.0.0-dev",
+      "license": "Proprietary - Numeris Software License 1.0",
+      "source": "this repository (crates/numeris-stats)",
+      "usage": "Numeris-owned component. OLS (QR), WLS, 2SLS/IV, robust/cluster/HAC covariance, panel fixed-effects (within) and between estimators, DID, logit, probit, Poisson (IRLS), diagnostics, and the golden/NIST StRD validation suite. Independent in-repo implementation; contains no third-party statistical or numerical code."
+    },
+    {
+      "name": "numeris-command",
+      "kind": "rust-crate",
+      "version": "1.0.0-dev",
+      "license": "Proprietary - Numeris Software License 1.0",
+      "source": "this repository (crates/numeris-command)",
+      "usage": "Numeris-owned component. Command DSL: lexer, parser, AST, validation and execution, canonical command rendering for GUI-command equivalence."
+    },
+    {
+      "name": "numeris-project",
+      "kind": "rust-crate",
+      "version": "1.0.0-dev",
+      "license": "Proprietary - Numeris Software License 1.0",
+      "source": "this repository (crates/numeris-project)",
+      "usage": "Numeris-owned component. .numeris project directory format, research registry, environment manifest, replay/reproducibility engine."
+    },
+    {
+      "name": "serde",
+      "kind": "rust-crate",
+      "version": "1",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://crates.io/crates/serde",
+      "usage": "Serialization framework for the canonical object model, command ASTs and .numeris project files. One of only two third-party dependencies of the engine crates."
+    },
+    {
+      "name": "serde_json",
+      "kind": "rust-crate",
+      "version": "1",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://crates.io/crates/serde_json",
+      "usage": "JSON reading/writing for project files, result objects and JSON import/export. One of only two third-party dependencies of the engine crates."
+    },
+    {
+      "name": "tauri",
+      "kind": "rust-crate",
+      "version": "2",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://crates.io/crates/tauri",
+      "usage": "Desktop shell (windows, menus, IPC, packaging, updater integration) for apps/desktop/src-tauri."
+    },
+    {
+      "name": "tauri-build",
+      "kind": "rust-crate",
+      "version": "2",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://crates.io/crates/tauri-build",
+      "usage": "Build-time helper generating the Tauri context and capability plumbing for the desktop shell."
+    },
+    {
+      "name": "react",
+      "kind": "npm-package",
+      "version": "19",
+      "license": "MIT",
+      "source": "https://www.npmjs.com/package/react",
+      "usage": "User-interface rendering (apps/desktop)."
+    },
+    {
+      "name": "react-dom",
+      "kind": "npm-package",
+      "version": "19",
+      "license": "MIT",
+      "source": "https://www.npmjs.com/package/react-dom",
+      "usage": "React renderer for the WebView DOM target (apps/desktop)."
+    },
+    {
+      "name": "zustand",
+      "kind": "npm-package",
+      "version": "5",
+      "license": "MIT",
+      "source": "https://www.npmjs.com/package/zustand",
+      "usage": "Lightweight application state management."
+    },
+    {
+      "name": "@tanstack/react-table",
+      "kind": "npm-package",
+      "version": "8",
+      "license": "MIT",
+      "source": "https://www.npmjs.com/package/@tanstack/react-table",
+      "usage": "Headless table engine for the virtualized data grid and statistical result tables."
+    },
+    {
+      "name": "@tauri-apps/api",
+      "kind": "npm-package",
+      "version": "2",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://www.npmjs.com/package/@tauri-apps/api",
+      "usage": "Typed IPC bridge between the React frontend and the Rust application services."
+    },
+    {
+      "name": "@tauri-apps/cli",
+      "kind": "npm-package",
+      "version": "2",
+      "license": "MIT OR Apache-2.0",
+      "source": "https://www.npmjs.com/package/@tauri-apps/cli",
+      "usage": "Development dependency: Tauri CLI (tauri dev / tauri build / tauri signer generate)."
+    },
+    {
+      "name": "vite",
+      "kind": "npm-package",
+      "version": "6",
+      "license": "MIT",
+      "source": "https://www.npmjs.com/package/vite",
+      "usage": "Development dependency: frontend bundler and dev server."
+    },
+    {
+      "name": "@vitejs/plugin-react",
+      "kind": "npm-package",
+      "version": "4",
+      "license": "MIT",
+      "source": "https://www.npmjs.com/package/@vitejs/plugin-react",
+      "usage": "Development dependency: React fast refresh and JSX transforms for Vite."
+    },
+    {
+      "name": "typescript",
+      "kind": "npm-package",
+      "version": "5",
+      "license": "Apache-2.0",
+      "source": "https://www.npmjs.com/package/typescript",
+      "usage": "Development dependency: static type checking of the frontend (tsc --noEmit)."
+    },
+    {
+      "name": "bun",
+      "kind": "npm-package",
+      "version": "1",
+      "license": "MIT",
+      "source": "https://bun.sh",
+      "usage": "Build-time tooling only (not bundled): JavaScript runtime and package manager used for frontend dependency installation and the Vite build."
+    }
+  ]
+}

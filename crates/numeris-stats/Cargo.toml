@@ -1,0 +1,16 @@
+[package]
+name = "numeris-stats"
+description = "Numeris statistical engine: OLS/WLS/IV, robust & clustered covariance, hypothesis tests, panel estimators, GLMs, diagnostics"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+numeris-core = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

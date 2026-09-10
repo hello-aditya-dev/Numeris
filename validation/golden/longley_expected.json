@@ -1,0 +1,33 @@
+{
+  "dataset": "NIST StRD Longley (1967) — certified regression reference values",
+  "source": "National Institute of Standards and Technology, Statistical Reference Datasets (itl.nist.gov/div898/strd)",
+  "model": "y = b0 + b1*defl + b2*gnp + b3*unemp + b4*armed + b5*pop + b6*year + e",
+  "n": 16,
+  "coefficients": {
+    "b0": -3482258.63459582,
+    "b1": 15.0618722713733,
+    "b2": -0.0358191792925910,
+    "b3": -2.02022980381683,
+    "b4": -1.03322686717359,
+    "b5": -0.0511041056535807,
+    "b6": 1829.15146461355
+  },
+  "standard_errors": {
+    "b0": 890420.383607373,
+    "b1": 84.9149257747669,
+    "b2": 0.033491007722432,
+    "b3": 0.488399681651699,
+    "b4": 0.214274163161675,
+    "b5": 0.226073200069370,
+    "b6": 455.478499142212
+  },
+  "residual_sd": 304.854073561965,
+  "r_squared": 0.995479004577296,
+  "tolerances": {
+    "coefficient_relative": 5e-7,
+    "se_relative": 5e-5,
+    "r2_absolute": 1e-10,
+    "rmse_relative": 1e-8,
+    "notes": "Longley is deliberately ill-conditioned (NIST difficulty: higher). Householder QR in double precision recovers coefficients to roughly 6-8 significant digits. Tolerances are method-appropriate per the numerical correctness policy."
+  }
+}

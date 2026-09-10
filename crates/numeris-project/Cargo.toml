@@ -1,0 +1,18 @@
+[package]
+name = "numeris-project"
+description = "Numeris project format (.numeris), research registry, environment manifest, project replay"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+numeris-core = { workspace = true }
+numeris-stats = { workspace = true }
+numeris-command = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
